@@ -1,88 +1,106 @@
+## Általános
+
+- **UR-001**: Az applikáció tárolja az irodaház aktív bérleti szerződéseit.
+- **UR-002**: Az applikáció rendelkezik egy árajánlat generáló funkcióval
+- **UR-003**: Az applikáció rendelkezik egy kimutatás funkcióval
+
 ## Árajánlat-generálás
 
-- **UR-001**: A létrehozott árajánlat egy létező irodaszámra hivatkozik.
-- **UR-002**: A rendszerben ugyanahhoz az irodához több, különböző vevőhöz tartozó bérlés is rögzíthető.
-- **UR-003**: A rendszer egy iroda árajánlatát az alábbi képlettel számolja:
+- **UR-004**: Az árajánlat-generálás során megadható: vevő neve, igényelt négyzetméter (minimum 5), kezdő dátum, záró dátum, emelet (0 esetén teljes épület), zaj konfliktus tűrés, meeting room prioritás (nincs/alacsony/közepes/magas), parkolóhelyek száma.
+- **UR-005**: Egy iroda több vevő által is bérelhető, de egy árajánlat pontosan egy irodára vonatkozik.
+- **UR-006**: A rendszer mindig a vizsgált irodák közül a legolcsóbb érvényes ajánlatot adja vissza.
+- **UR-007**: Ha a megadott emelet 0, akkor a rendszer az összes iroda közül választ.
+- **UR-008**: Az iroda árajánlatát a rendszer az alábbi képlettel számolja:
 
-`alap_ár * négyzetméterek_száma * hónapok_száma * (1 - emelet_telitettség_kedvezmény) * (1 - hónapok_száma_kedvezmény)`
+`alap_ár * négyzetméterek_száma * napok_száma * (1 + irodaház_telitettség_szorzó * irodaház_telítettség) * (1 - szerződés_hossza_kedvezmény) * (1 - zaj_konfliktus_szorzó * zaj_konfliktus)`
 
-- **UR-004**: A rendszer a megadott emelet iroda árai közül a legolcsóbbat adja vissza mint árajánlat
-- **UR-005**: Ha az emeletnek 0 van megadva akkor az összes iroda árai közül a legolcsóbbat adja vissza mint árajánlat
-- **UR-006**: Ha a rendszer nem talál olyan irodát amiben a kiadható négyzetméterek száma kissebb mint a megadott négyzetméterszám akkor a rendszer adjon vissza hibát
-- **UR-007**: Ha a meeting room igény be van kapcsolva, akkor az árajánlathoz adódjon hozzá a `meeting_room_ár`
-- **UR-008**: Ha a parkolóigény be van kapcsolva, akkor az árajánlathoz adódjon hozzá a `parkoló_ár`
-- **UR-009**: Ha a `hónapok_száma` nagyobb mint 120 akkor a rendszer adjon vissza hibát
+- **UR-009**: Ha meeting room igény be van jelölve, a rendszer az ajánlathoz hozzáadja a `meeting_room_ár` értékét.
+- **UR-010**: Ha parkolóigény be van jelölve, a rendszer az ajánlathoz hozzáadja a `parkoló_ár` értékét.
 
-## Alapár és alapár-frissítés
+## Irodaház telítettség
 
-- **UR-010**: A rendszer az `irodaház_telitettség` értékét így számolja:
+- **UR-011**: A rendszer az `irodaház_telitettség` értékét így számolja:
 
-`sum(bérleti_szerződés az irodaházban)(bérleti_szerződés.négyzetméterek_száma) / sum(iroda az irodaházban)(iroda.négyzetmérek_száma)`
+`sum(bérleti_szerződés az irodaházban)(bérleti_szerződés.négyzetméterek_száma) / sum(iroda az irodaházban)(iroda.négyzetméterek_száma)`
 
-- **UR-011**: A „Következő hónap” meghívásakor, ha `irodaház_telitettség > 0.9`, akkor az új `alap_ár = régi_alap_ár * 1.05`.
-- **UR-012**: A „Következő hónap” meghívásakor, ha `irodaház_telitettség < 0.4` és `alap_ár > kezdeti_alap_ár / 2`, akkor az új `alap_ár = régi_alap_ár * 0.95`.
+- **UR-012**: Időintervallumra számolt `irodaház_telítettség` értéke az intervallum napjaira számolt napi telítettségek átlaga.
 
-## Négyzetméterek száma követelmények
+## Négyzetméter-számítás
 
-- **UR-013**: A rendszer csak olyan irodára generálhat ajánlatot, ahol a szabad négyzetméterek száma `>= megadott_négyzetméterek_száma`.
-- **UR-014**: Ha nincs olyan iroda, ahol a szabad négyzetméterek száma `>= megadott_négyzetméterek_száma`, a rendszer árajánlat helyett hibát ad vissza.
-- **UR-015**: Ha egy iroda szabad területe pontosan egyenlő a `megadott_négyzetméterek_száma` értékével, akkor az ajánlatban `négyzetméterek_száma = megadott_négyzetméterek_száma`.
-- **UR-016**: Ha egy iroda szabad területe legalább 5-tel nagyobb a `megadott_négyzetméterek_száma` értékénél, akkor az ajánlatban `négyzetméterek_száma = megadott_négyzetméterek_száma`.
-- **UR-017**: Ha egy iroda szabad területe nagyobb a `megadott_négyzetméterek_száma` értékénél, de a különbség kisebb mint 5, akkor az ajánlatban a `négyzetméterek_száma` egyenlő az iroda szabad négyzetmétereinek számával`.
+- **UR-013**: A legkisebb kiadható terület 5 négyzetméter.
+- **UR-015**: A rendszer ajánlatkészítéskor ellenőrzi, hogy az igényelt terület kiosztása után maradó terület kiadható-e és ha a maradó terület kisebb mint 5 négyzetméter, akkor a rendszer a maradékot is az ajánlati területhez adja.
+- **UR-016**: Ha a szabad terület pontosan egyenlő a `megadott_négyzetméterek_száma` értékkel, akkor `négyzetméterek_száma = megadott_négyzetméterek_száma`.
+- **UR-017**: Ha a szabad terület legalább 5-tel nagyobb a `megadott_négyzetméterek_száma` értéknél, akkor `négyzetméterek_száma = megadott_négyzetméterek_száma`.
+- **UR-018**: Egyéb esetben `négyzetméterek_száma = iroda_szabad_négyzetméter`.
 
-## Hónapok száma kedvezmény
+## Szerződés hossza kedvezmény
 
-- **UR-018**: Ha `hónapok_száma < 6`, akkor `hónapok_száma_kedvezmény = 0`.
-- **UR-019**: Ha `6 <= hónapok_száma < 12`, akkor `hónapok_száma_kedvezmény = 0.05`.
-- **UR-020**: Ha `12 <= hónapok_száma < 18`, akkor `hónapok_száma_kedvezmény = 0.1`.
-- **UR-021**: Ha `hónapok_száma >= 18`, akkor `hónapok_száma_kedvezmény = 0.15`.
+- **UR-019**: Ha `hónapok_száma < 6`, akkor `szerződés_hossza_kedvezmény = 0`.
+- **UR-020**: Ha `6 <= hónapok_száma < 12`, akkor `szerződés_hossza_kedvezmény = 0.05`.
+- **UR-021**: Ha `12 <= hónapok_száma < 18`, akkor `szerződés_hossza_kedvezmény = 0.1`.
+- **UR-022**: Ha `hónapok_száma >= 18`, akkor `szerződés_hossza_kedvezmény = 0.15`.
 
-## Emelet telítettség és kedvezmény
+## Zaj konfliktus
 
-- **UR-022**: A rendszer az `emelet_telitettség` értékét így számolja:
+- **UR-023**: A rendszer az alacsonyabb zaj konfliktusú irodákra magasabb, a magasabb zaj konfliktusú irodákra alacsonyabb árajánlatot ad.
+- **UR-024**: A rendszer a folyosó pozíciót az alábbi logika szerint számolja:
 
-`sum(bérleti_szerződés az emeleten)(bérleti_szerződés.négyzetméterek_száma) / sum(iroda az emeleten)(iroda.négyzetmérek_száma)`
+`ha iroda_szám <= irodák_száma_egy_emeleten / 2: folyosó_pozíció = iroda_szám`  
+`különben: folyosó_pozíció = irodák_száma_egy_emeleten - iroda_szám + 1`
 
-- **UR-023**: Ha `emelet_telitettség > 0.8`, akkor `emelet_telitettség_kedvezmény = emelet_telitettség / 20`.
-- **UR-024**: Ha `emelet_telitettség <= 0.8`, akkor `emelet_telitettség_kedvezmény = 0`.
+- **UR-025**: A rendszer a `zaj_konfliktus` értéket az alábbi képlettel számolja:
+
+`zaj_konfliktus = sin(π * (folyosó_pozíció - 0.5) / (irodák_száma_egy_emeleten / 2 + 0.5))`
+
+- **UR-026**: A `zaj_konfliktus_szorzó` azt adja meg, hogy maximális zaj konfliktusnál hány százalékkal módosuljon az ajánlat.
+
+## Fizikai szeparáció
+
+- **UR-027**: Több elszigetelt részből álló iroda esetén részleges bérlés csak akkor engedélyezett, ha minden üresen maradó elszigetelt rész területe legalább 5 négyzetméter vagy 0.
+
+## Shared infrastructure (coworking)
+
+- **UR-028**: A rendszer támogat coworking irodákat, ahol több bérlő bérelhet egyszerre nem kizárólagos használattal.
+- **UR-029**: Coworking irodához is igényelhető parkoló és meeting room használat.
+- **UR-030**: Minden coworking irodához tartozik `max_bérlő_száma`, amit a rendszer nem léphet túl.
+- **UR-031**: Coworking árajánlat számítása:
+
+`coworking_alap_ár * napok_száma * (1 + irodaház_telitettség_szorzó * irodaház_telítettség) * (1 - szerződés_hossza_kedvezmény)`
 
 ## Meeting room árképzés
 
-- **UR-025**: A rendszer a `meeting_room_ár` értékét így számolja:
+- **UR-032**: A rendszer a `meeting_room_ár` értékét az alábbi képlettel számolja:
 
-`meeting_room_ár = 10 * (1 - emelet_meeting_room_telitettség_kedvezmény)`
+`meeting_room_ár = meeting_room_alap_ár * (1 + emelet_meeting_room_telitettségi_szorzó * emelet_meeting_room_telitettség)`
 
-- **UR-026**: A rendszer az `emelet_meeting_room_telitettség` értékét így számolja:
+- **UR-033**: Az `emelet_meeting_room_telitettség` értéke:
 
 `(adott emeleten meeting roomot igénybe vevők száma) / (adott emelet irodáinak száma * 2)`
 
-- **UR-027**: Ha `emelet_meeting_room_telitettség > 0.8`, akkor `emelet_meeting_room_telitettség_kedvezmény = emelet_meeting_room_telitettség / 20`.
-- **UR-028**: Ha `emelet_meeting_room_telitettség <= 0.8`, akkor `emelet_meeting_room_telitettség_kedvezmény = 0`.
+- **UR-034**: Közepes prioritás esetén a meeting room ár 20%-kal magasabb az alacsony prioritáshoz képest.
+- **UR-035**: Magas prioritás esetén a meeting room ár 40%-kal magasabb az alacsony prioritáshoz képest.
 
 ## Parkoló árképzés
 
-- **UR-029**: A rendszer a `parkoló_ár` értékét így számolja:
+- **UR-036**: A rendszer a `parkoló_ár` értékét az alábbi képlettel számolja:
 
-`parkoló_ár = parkolók_száma * 10 * (1 - parkoló_telitettség_kedvezmény)`
+`parkoló_ár = parkolók_száma * parkoló_alap_ár * (1 - parkoló_telitettségi_szorzó * parkoló_telitettség)`
 
-- **UR-030**: A rendszer a `parkoló_telitettség` értékét így számolja:
+- **UR-037**: A `parkoló_telitettség` értéke:
 
-`kibérelt_parkolók_száma / összes_parkoló_száma`
-
-- **UR-031**: Ha `parkoló_telitettség > 0.8`, akkor `parkoló_telitettség_kedvezmény = parkoló_telitettség / 20`.
-- **UR-032**: Ha `parkoló_telitettség <= 0.8`, akkor `parkoló_telitettség_kedvezmény = 0`.
-- **UR-033**: Ha a parkolóigény be van kapcsolva és nincs elérhető parkoló akkor a rendszer adjon vissza hibát
+`kibérelt_parkolók_száma / összes_parkolók_száma`
 
 ## Kimutatás
 
-- **UR-034**: A táblázat minden sora tartalmazza a hónap dátumát és az adott hónap bevételét.
-- **UR-035**: A hónap bevétele meg kell egyezzen a hónapra érvényes bérleti szerződések összegével (egy bérleti szerződés már abban a hónapban is érvényesnek számít amiben megkötötték)
-- **UR-036**: A kimutatás tartalmazza az `irodaház_telitettség`-et melyet a leírásban szereplő képlet szerint számol ki a hónapra érvényes bérleti szerződésekből
+- **UR-038**: A kimutatás táblázata napi bontásban tartalmazza, hogy az irodaház melyik napon mennyi bevételt termelt.
+- **UR-039**: A kimutatás tartalmazza az `irodaház_telitettség` értéket is.
 
-## Árajánlat elfogadása
+## Árajánlat státuszok és elfogadás
 
-- **UR-037**: Az ajánlat elfogadásával az árajánlatban megadott adatok bekerülnek a rendszerbe 
-
-## Következő hónap
-
-- **UR-038**: A következő hónap meghívásával a rendszer növeli az aktuális dátumot
+- **UR-040**: Frissen generált árajánlat státusza `proposed`.
+- **UR-041**: Ha az ügyfél elutasítja az ajánlatot, vagy 1 hónapig nem válaszol, a státusz `rejected`.
+- **UR-042**: Ha az ügyfél elfogadja az ajánlatot, a státusz `reserved`.
+- **UR-043**: Szerződéskötéskor a státusz `contracted`.
+- **UR-044**: A telítettséggel kapcsolatos mutatók számításánál a rendszer kizárólag `contracted` ajánlatokat vesz figyelembe.
+- **UR-045**: Elfogadott ajánlat esetén a menedzser rögzítheti a rendszerben a lefoglalást, a bérleti árat és az ajánlat generáláskor megadott további adatokat.
+- **UR-046**: A rendszer az `Offer` rekordot csak a legolcsóbb érvényes ajánlat kiszámítása és kiválasztása után rögzíti – az árkalkuláció során közbülső rekord nem jön létre.

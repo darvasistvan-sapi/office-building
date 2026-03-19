@@ -1,0 +1,30 @@
+---
+id: ecf8cbd4-9153-486d-99d0-3a7740d75759
+---
+flowchart LR
+    Manager["Menedzser"]
+    Ugyfel["Ügyfél"]
+    Scheduler["Scheduler"]
+
+    subgraph Rendszer["Irodaház-menedzsment rendszer"]
+        UC1(("Legolcsóbb ajánlat kiszámítása"))
+        UC2(("Ajánlat létrehozása (proposed)"))
+        UC3(("Árajánlatkérés rögzítése (customer_name + igények)"))
+        UC4(("Ajánlat elfogadása (reserved)"))
+        UC5(("Ajánlat elutasítása (rejected)"))
+        UC6(("Szerződésesítés (contracted)"))
+        UC7(("Napi kimutatás lekérése (bevétel + telítettség)"))
+        UC8(("Lejárt ajánlatok automatikus elutasítása"))
+    end
+
+    Ugyfel --> UC1
+    UC1 --> UC2
+    UC2 --> UC3
+
+    Ugyfel --> UC4
+    Ugyfel --> UC5
+
+    Ugyfel --> UC6
+    Manager --> UC7
+
+    Scheduler --> UC8

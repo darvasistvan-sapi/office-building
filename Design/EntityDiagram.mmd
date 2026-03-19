@@ -1,0 +1,68 @@
+---
+id: 6608af63-8ca7-4991-b331-7411c19ed402
+---
+erDiagram
+	FLOOR {
+		int id PK
+		int floor_no
+	}
+
+	OFFICE {
+		int id PK
+		int floor_id FK
+		string office_number
+		decimal total_area_m2
+	}
+
+	OFFICE_SEGMENT {
+		int id PK
+		int office_id FK
+		int segment_no
+		decimal segment_area_m2
+	}
+
+	COWORKING_OFFICE {
+		int office_id PK,FK
+		int max_tenants
+	}
+
+	CUSTOMER {
+		int id PK
+		string name UK
+	}
+
+	OFFER {
+		int id PK
+		int customer_id FK
+		int office_id FK
+		date start_date
+		date end_date
+		decimal requested_area_m2
+		decimal allocated_area_m2
+		string meeting_priority
+		int parking_count
+		decimal total_price
+		string status
+		datetime created_at
+		datetime answered_at
+	}
+
+	CONTRACT {
+		int id PK
+		int offer_id FK
+		datetime contracted_at
+	}
+
+	DAILY_METRICS {
+		int id PK
+		date day
+		decimal revenue
+		decimal occupancy_ratio
+	}
+
+	FLOOR ||--o{ OFFICE : contains
+	OFFICE ||--o{ OFFICE_SEGMENT : has
+	OFFICE ||--o| COWORKING_OFFICE : specializes
+	CUSTOMER ||--o{ OFFER : requests
+	OFFICE ||--o{ OFFER : quoted_for
+	OFFER ||--o| CONTRACT : finalized_as

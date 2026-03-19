@@ -4,9 +4,10 @@ Az applikáció egy olyan irodaház menedzselését segíti elő, ahol irodákat
 
 ## Árajánlat generálás
 
-A menedzser megadhatja a vevő igényeit amikből az applikáció kigenerál az igényeknek megfelelő árajánlatot és az iroda számát amihez az ajánlat szól. Egy irodát több vevő is bérelhet de egy ajánlat csakis egy irodára vonatkozhat.
+A menedzser megadhatja a vevő adatait és igényeit amikből az applikáció kigenerál az igényeknek megfelelő árajánlatot és az iroda számát amihez az ajánlat szól. Egy irodát több vevő is bérelhet de egy ajánlat csakis egy irodára vonatkozhat.
 A vevőnek a következő lehetőségei vannak:
 
+- a vevő neve,
 - hány négyzetmétert akar bérelni (minimum 5),
 - a bérlés kezdeti dátuma,
 - a bérlés végső dátuma,
@@ -98,5 +99,5 @@ A menedzsernek lehetősége van bármikor lekérni egy kimutatást amivel a rend
 
 ## Árajánlat elfogadása
 
-Amikor az applikáció kigenerál egy árajánlatot akkor a rendszerben letárolja azt proposed státuszal. Ha az ügyfél ezt elutasítja vagy nem ad rá választ egy hónapig akkor az ajánlat státusza rejected lesz. Ha az ügyfél elfogadja az árajánlatot akkor az ajánlat státusza reserved lesz, ha pedig megkötődik a szerződést akkor contracted. A telitettséggel kapcsolatos mutatóknál az applikáció kizárólag a contracted ajánlatokkal számol.
+Amikor az applikáció meghatározta az igényeknek megfelelő legolcsóbb érvényes ajánlatot, csak ezt követően rögzíti azt a rendszerben proposed státusszal. Ha az ügyfél ezt elutasítja vagy nem ad rá választ egy hónapig akkor az ajánlat státusza rejected lesz. Ha az ügyfél elfogadja az árajánlatot akkor az ajánlat státusza reserved lesz, ha pedig megkötődik a szerződést akkor contracted. A telitettséggel kapcsolatos mutatóknál az applikáció kizárólag a contracted ajánlatokkal számol.
 Ha a vevő elfogadja az árajánlatot akkor a menedzsernek lehetősége van felvinni a rendszerbe amivel rendszer letárolja az árajánlatban megfogalmazott iroda lefoglalását, hogy mennyiért bérli, és a többi adatot, ami az árajánlat generálásnál meg volt adva.
