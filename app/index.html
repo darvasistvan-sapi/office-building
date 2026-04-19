@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irodaház-menedzsment</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Irodaház-menedzsment applikáció</h1>
+    <div id="app">
+        <section>
+            <h2>Ajánlatkérés</h2>
+            <form id="offerForm">
+                <div class="form-group">
+                    <label for="customer">Név</label>
+                    <input name="customer" id="customer" required autocomplete="off" placeholder="Ügyfél neve" value="Teszt Ügyfél">
+                </div>
+                <div class="form-group">
+                    <label for="area">Igényelt terület (m²)</label>
+                    <input name="area" id="area" type="number" min="5" required placeholder="pl. 10" value="10">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="coworking" name="coworking">
+                        Coworking
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="start">Bérlés kezdete</label>
+                    <input name="start" id="start" type="date" required value="2026-05-01">
+                </div>
+                <div class="form-group">
+                    <label for="end">Bérlés vége</label>
+                    <input name="end" id="end" type="date" required value="2026-06-01">
+                </div>
+                <div class="form-group">
+                    <label for="floor">Emelet <span style="color:#888;font-weight:400;">(0 = mind)</span></label>
+                    <input name="floor" id="floor" type="number" min="0" required placeholder="pl. 1" value="1">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="noiseEnable" checked>
+                        Zaj konfliktus megadása
+                    </label>
+                    <input name="noise" id="noise" type="number" min="0" max="1" step="0.01" value="0.2">
+                </div>
+                <div class="form-group">
+                    <label for="meeting">Meeting szoba prioritás</label>
+                    <select name="meeting" id="meeting">
+                        <option value="none">Nincs</option>
+                        <option value="low">Alacsony</option>
+                        <option value="medium" selected>Közepes</option>
+                        <option value="high">Magas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="parking">Parkolóhelyek száma</label>
+                    <input name="parking" id="parking" type="number" min="0" value="1" placeholder="pl. 1">
+                </div>
+                <button type="submit" class="btn">Ajánlatot kérek</button>
+            </form>
+            <div id="offerResult"></div>
+        </section>
+        <section>
+            <h2>Aktív szerződések</h2>
+            <div id="contracts"></div>
+        </section>
+        <section>
+            <h2>Napi kimutatás</h2>
+            <div class="form-group" style="margin-bottom: 10px;">
+                <label for="metrics-date">Dátum:</label>
+                <input type="date" id="metrics-date" value="2026-04-18">
+                <button id="metrics-btn" class="btn" type="button">Kimutatás</button>
+            </div>
+            <div id="metrics"></div>
+        </section>
+    </div>
+    <script src="app.js" type="module"></script>
+</body>
+</html>
